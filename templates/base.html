@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Crop Monitoring System{% endblock %}</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-color: #2E7D32;
+            --primary-light: #60ad5e;
+            --primary-dark: #005005;
+            --secondary-color: #795548;
+            --secondary-light: #a98274;
+            --secondary-dark: #4b2c20;
+            --accent-color: #1565C0;
+            --accent-light: #5e92f3;
+            --accent-dark: #003c8f;
+            --success-color: #2e7d32;
+            --warning-color: #f9a825;
+            --danger-color: #c62828;
+            --light-color: #f5f5f5;
+            --dark-color: #212121;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        
+        .navbar {
+            background-color: var(--primary-color);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            color: white !important;
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.85) !important;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: white !important;
+        }
+        
+        .nav-link.active {
+            color: white !important;
+            font-weight: 600;
+        }
+        
+        .sidebar {
+            background-color: white;
+            min-height: calc(100vh - 56px);
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+            padding: 20px 0;
+        }
+        
+        .sidebar-link {
+            color: #555;
+            padding: 10px 20px;
+            border-radius: 0;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+        
+        .sidebar-link i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .sidebar-link:hover {
+            background-color: #f5f5f5;
+            color: var(--primary-color);
+        }
+        
+        .sidebar-link.active {
+            background-color: #e8f5e9;
+            color: var(--primary-color);
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .content {
+            padding: 20px;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 20px;
+        }
+        
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .card-header {
+            border-bottom: none;
+            background-color: transparent;
+            padding: 20px 20px 0 20px;
+        }
+        
+        .card-title {
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--secondary-dark);
+            border-color: var(--secondary-dark);
+        }
+        
+        .btn-accent {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            color: white;
+        }
+        
+        .btn-accent:hover {
+            background-color: var(--accent-dark);
+            border-color: var(--accent-dark);
+            color: white;
+        }
+        
+        .badge-primary {
+            background-color: var(--primary-color);
+        }
+        
+        .badge-secondary {
+            background-color: var(--secondary-color);
+        }
+        
+        .badge-accent {
+            background-color: var(--accent-color);
+        }
+        
+        .badge-success {
+            background-color: var(--success-color);
+        }
+        
+        .badge-warning {
+            background-color: var(--warning-color);
+        }
+        
+        .badge-danger {
+            background-color: var(--danger-color);
+        }
+        
+        .alert-success {
+            background-color: #e8f5e9;
+            border-color: #c8e6c9;
+            color: var(--success-color);
+        }
+        
+        .alert-warning {
+            background-color: #fff8e1;
+            border-color: #ffecb3;
+            color: var(--warning-color);
+        }
+        
+        .alert-danger {
+            background-color: #ffebee;
+            border-color: #ffcdd2;
+            color: var(--danger-color);
+        }
+        
+        .weather-card {
+            background: linear-gradient(135deg, #1e88e5, #0d47a1);
+            color: white;
+        }
+        
+        .crop-health-excellent {
+            background-color: #4caf50;
+            color: white;
+        }
+        
+        .crop-health-good {
+            background-color: #8bc34a;
+            color: white;
+        }
+        
+        .crop-health-fair {
+            background-color: #ffc107;
+            color: white;
+        }
+        
+        .crop-health-poor {
+            background-color: #ff9800;
+            color: white;
+        }
+        
+        .crop-health-critical {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.5s ease-in-out;
+        }
+        
+        @keyframes slideIn {
+            0% { transform: translateY(20px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .sidebar {
+                min-height: auto;
+                position: relative;
+                padding: 10px;
+            }
+            
+            .content {
+                padding: 15px;
+            }
+            
+            .weather-icon {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .d-flex.flex-row {
+                flex-direction: column !important;
+            }
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'dashboard:home' %}">
+                <i class="fas fa-leaf"></i> CropMonitor
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'alerts:alert_list' %}">
+                                <i class="fas fa-bell"></i>
+                                {% with unread_count=user.alerts.filter.count %}
+                                    {% if unread_count > 0 %}
+                                        <span class="badge rounded-pill bg-danger">{{ unread_count }}</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle"></i> {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="{% url 'accounts:profile' %}"><i class="fas fa-user me-2"></i> Profile</a></li>
+                                <li><a class="dropdown-item" href="{% url 'accounts:update_profile' %}"><i class="fas fa-cog me-2"></i> Settings</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}"><i class="fas fa-sign-in-alt me-1"></i> Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'register' %}"><i class="fas fa-user-plus me-1"></i> Register</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container-fluid">
+        <div class="row">
+            {% if user.is_authenticated %}
+                <!-- Sidebar -->
+                <div class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                    <div class="list-group list-group-flush">
+                        <a href="{% url 'dashboard:home' %}" class="list-group-item sidebar-link {% if request.resolver_match.view_name == 'dashboard:home' %}active{% endif %}">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                        <a href="{% url 'fields:field_list' %}" class="list-group-item sidebar-link {% if 'fields' in request.path %}active{% endif %}">
+                            <i class="fas fa-map-marker-alt"></i> Fields
+                        </a>
+                        <a href="{% url 'weather:forecast' %}" class="list-group-item sidebar-link {% if 'weather' in request.path %}active{% endif %}">
+                            <i class="fas fa-cloud-sun"></i> Weather
+                        </a>
+                        <a href="{% url 'analytics:crop_health' %}" class="list-group-item sidebar-link {% if 'analytics' in request.path %}active{% endif %}">
+                            <i class="fas fa-chart-line"></i> Analytics
+                        </a>
+                        <a href="{% url 'alerts:alert_list' %}" class="list-group-item sidebar-link {% if 'alerts' in request.path %}active{% endif %}">
+                            <i class="fas fa-bell"></i> Alerts
+                            {% with unread_count=user.alerts.filter.count %}
+                                {% if unread_count > 0 %}
+                                    <span class="badge rounded-pill bg-danger ms-auto">{{ unread_count }}</span>
+                                {% endif %}
+                            {% endwith %}
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Main Content -->
+                <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                    <div class="content">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        
+                        {% block content %}{% endblock %}
+                    </div>
+                </main>
+            {% else %}
+                <!-- Content for non-authenticated users -->
+                <main class="col-12">
+                    <div class="content">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        
+                        {% block content %}{% endblock %}
+                    </div>
+                </main>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="bg-light text-center text-muted py-3 mt-5">
+        <div class="container">
+            <p class="mb-0">&copy; {% now "Y" %} Crop Monitoring System. All rights reserved.</p>
+        </div>
+    </footer>
+    
+    <!-- JavaScript Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

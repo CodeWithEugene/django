@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+
+{% load humanize %}
+
+{% block title %}Dashboard - Crop Monitoring System{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <h2 class="mb-4">Dashboard</h2>
+    
+    <!-- Stats Overview -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white slide-in">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-map-marker-alt me-2"></i> Fields</h5>
+                    <h3 class="fw-bold">{{ field_count }}</h3>
+                    <p class="mb-0">Active fields</p>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <a href="{% url 'fields:field_list' %}" class="text-white">View all <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white slide-in" style="animation-delay: 0.1s;">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-seedling me-2"></i> Crops</h5>
+                    <h3 class="fw-bold">{{ crop_count }}</h3>
+                    <p class="mb-0">Growing crops</p>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <a href="{% url 'fields:field_list' %}" class="text-white">View all <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white slide-in" style="animation-delay: 0.2s;">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-bell me-2"></i> Alerts</h5>
+                    <h3 class="fw-bold">{{ alert_count }}</h3>
+                    <p class="mb-0">Unread alerts</p>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <a href="{% url 'alerts:alert_list' %}" class="text-white">View all <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white slide-in" style="animation-delay: 0.3s;">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-cloud-sun me-2"></i> Weather</h5>
+                    <h3 class="fw-bold">7-Day</h3>
+                    <p class="mb-0">Forecast available</p>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <a href="{% url 'weather:forecast' %}" class="text-white">View forecast <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Weather Widget -->
+        <div class="col-md-6 mb-4">
+            <div class="card weather-card fade-in">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Current Weather</h5>
+                    
+                    {% if weather_data %}
+                        <div class="d-flex align-items-center mb-3">
+                            <div>
+                                <img src="https://openweathermap.org/img/wn/{{ weather_data.icon }}@2x.png" alt="{{ weather_data.description }}" class="weather-icon" width="80" height="80">
+                            </div>
+                            <div class="ms-3">
+                                <h2 class="fw-bold mb-0">{{ weather_data.temp|floatformat:1 }}°C</h2>
+                                <p class="mb-0 text-capitalize">{{ weather_data.description }}</p>
+                                <p class="mb-0">{{ weather_data.location }}, {{ weather_data.country }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <p class="mb-1"><i class="fas fa-tint me-1"></i> Humidity</p>
+                                <h5>{{ weather_data.humidity }}%</h5>
+                            </div>
+                            <div class="col-4">
+                                <p class="mb-1"><i class="fas fa-wind me-1"></i> Wind</p>
+                                <h5>{{ weather_data.wind_speed|floatformat:1 }} m/s</h5>
+                            </div>
+                            <div class="col-4">
+                                <p class="mb-1"><i class="fas fa-cloud me-1"></i> Clouds</p>
+                                <h5>{{ weather_data.clouds }}%</h5>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <p>No weather data available. Please add a field with coordinates to see weather information.</p>
+                            <a href="{% url 'fields:field_create' %}" class="btn btn-light">Add Field</a>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <a href="{% url 'weather:forecast' %}" class="text-white">View detailed forecast <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Alerts -->
+        <div class="col-md-6 mb-4">
+            <div class="card fade-in">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Recent Alerts</h5>
+                    <a href="{% url 'alerts:alert_list' %}" class="btn btn-sm btn-primary">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    {% if alerts %}
+                        <div class="list-group list-group-flush">
+                            {% for alert in alerts %}
+                                <a href="{% url 'alerts:alert_detail' alert.id %}" class="list-group-item list-group-item-action {% if not alert.is_read %}fw-bold{% endif %}">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">
+                                            {% if alert.level == 'danger' %}
+                                                <span class="badge bg-danger me-2">Critical</span>
+                                            {% elif alert.level == 'warning' %}
+                                                <span class="badge bg-warning me-2">Warning</span>
+                                            {% elif alert.level == 'success' %}
+                                                <span class="badge bg-success me-2">Success</span>
+                                            {% else %}
+                                                <span class="badge bg-info me-2">Info</span>
+                                            {% endif %}
+                                            {{ alert.title }}
+                                        </h6>
+                                        <small>{{ alert.created_at|naturaltime }}</small>
+                                    </div>
+                                    <p class="mb-1 text-truncate">{{ alert.message }}</p>
+                                    <small>
+                                        {% if alert.category == 'weather' %}
+                                            <i class="fas fa-cloud-sun me-1"></i> Weather
+                                        {% elif alert.category == 'crop' %}
+                                            <i class="fas fa-seedling me-1"></i> Crop
+                                        {% elif alert.category == 'soil' %}
+                                            <i class="fas fa-mountain me-1"></i> Soil
+                                        {% elif alert.category == 'system' %}
+                                            <i class="fas fa-cog me-1"></i> System
+                                        {% else %}
+                                            <i class="fas fa-info-circle me-1"></i> Other
+                                        {% endif %}
+                                        {% if alert.field %}
+                                            | <i class="fas fa-map-marker-alt me-1"></i> {{ alert.field.name }}
+                                        {% endif %}
+                                    </small>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <p class="mb-0">No alerts at the moment.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Fields -->
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <div class="card fade-in">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Recent Fields</h5>
+                    <a href="{% url 'fields:field_create' %}" class="btn btn-sm btn-primary">Add New Field</a>
+                </div>
+                <div class="card-body">
+                    {% if fields %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Size</th>
+                                        <th>Soil Type</th>
+                                        <th>Crops</th>
+                                        <th>Last Updated</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for field in fields %}
+                                        <tr>
+                                            <td>
+                                                <a href="{% url 'fields:field_detail' field.id %}">{{ field.name }}</a>
+                                            </td>
+                                            <td>{{ field.size_acres }} acres</td>
+                                            <td>{{ field.get_soil_type_display }}</td>
+                                            <td>{{ field.crops.count }}</td>
+                                            <td>{{ field.updated_at|naturaltime }}</td>
+                                            <td>
+                                                <a href="{% url 'fields:field_detail' field.id %}" class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{% url 'fields:field_update' field.id %}" class="btn btn-sm btn-secondary">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <p>You haven't added any fields yet.</p>
+                            <a href="{% url 'fields:field_create' %}" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i> Add Your First Field
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
